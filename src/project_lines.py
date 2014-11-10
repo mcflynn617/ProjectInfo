@@ -25,10 +25,46 @@ class ProjectLines(object):
         self.project_path = project_path
         self.exclude_list = exclude_list
         self.skip_blank_lines = skip_blank_lines
-        self.file_types = []
-        self.file_type_line_count = {}
-        self.num_lines_in_project = 0
+        self.__file_types = []
+        self.__file_type_line_count = {}
+        self.__num_lines_in_project = 0
+    
+    def get_filetypes(self):
+        return self.__file_types
+    
+    def set_filetypes(self, file_ext):
+        if isinstance(file_ext,basestring):
+            self.__file_types.append(file_ext)
+        else:
+            print "filetype is not a string!"
+    
+    def get_file_type_line_count(self,file_ext):
+        if file_ext in self.get_filetypes():
+            return self.__file_type_line_count[file_ext]
+        else:
+            print "filetype is not in list of valid types!"
+    
+    def set_file_type_line_count(self,file_ext,line_count):
+        if file_ext in self.get_filetypes() and isinstance(line_count,int):
+            self.__file_type_line_count[file_ext] += line_count
+        else:
+            print "either filetype isn't right or line count isn't an integer"
         
+    def set_project_line_count(self,line_count):
+        if isinstance(line_count, int):
+            self.__num_lines_in_project += line_count
+        else:
+            print "line count is not an integer!"
+        
+    def get_project_line_count(self):
+        return self.__num_lines_in_project
+    
+    def init_file_type(self,file_ext):
+        if isinstance(file_ext, basestring):
+            self.__file_type_line_count[file_ext] = 0
+        else:
+            print "not a valid type!"
+    
     def traverse_project(self):
         '''
         recursively iterates through all subdirectories of a project and calls 
@@ -54,13 +90,14 @@ class ProjectLines(object):
                 if file_ext in self.exclude_list or file_ext == "":
                     continue
                 
-                if not file_ext in self.file_types:
-                    self.file_types.append(file_ext)
-                    self.file_type_line_count[file_ext] = 0
+                if not file_ext in self.get_filetypes():
+                    self.set_filetypes(file_ext)
+                    self.init_file_type(file_ext)
                     
-                self.count_lines(subdir,name)
-                self.num_lines_in_project += self.line_count
-                self.file_type_line_count[file_ext] += self.line_count 
+                line_count = self.count_lines(subdir,name)
+                self.set_project_line_count(line_count)
+                self.set_file_type_line_count(file_ext, line_count)
+                 
                 
                 
     def count_lines(self,file_path,file_name):
@@ -76,7 +113,7 @@ class ProjectLines(object):
                     line_count += 1
         except Exception, e:
             print "can't open file %s" % file_name
-        self.line_count = line_count
+        return(line_count)
     
     def check_num_lines(self):
         ''' 
@@ -84,10 +121,10 @@ class ProjectLines(object):
         lines for each file type
         '''
         check_lines = 0
-        for key in self.file_type_line_count:
-            print "file type '%s' has %d lines" % (key, self.file_type_line_count[key])
-            check_lines += self.file_type_line_count[key]
-        assert(check_lines == self.line_count), "the number of lines doesn't "\
+        for key in self.get_filetypes():
+            print "file type '%s' has %d lines" % (key, self.__file_type_line_count[key])
+            check_lines +=  self.get_file_type_line_count(key)#self.__file_type_line_count[key]
+        assert(check_lines == self.get_project_line_count()), "the number of lines doesn't "\
                                                 "add up, some files might have "\
                                                 "been skipped"
     
@@ -107,7 +144,7 @@ if __name__ == '__main__':
     proj_lines = ProjectLines(args.root_path, exclude_list = excluded_filetypes, 
                               skip_blank_lines = args.skip_blanks)
     proj_lines.traverse_project()
-    print "total number of lines in project is %d" % proj_lines.line_count
+    print "total number of lines in project is %d" % proj_lines.get_project_line_count()
     proj_lines.check_num_lines()
     
         
