@@ -87,7 +87,7 @@ class ProjectLines(object):
                 file_ext = os.path.splitext(name)[-1]
                 #ignore files whose filetype is in exclude list or if it 
                 #doesn't have an extension
-                if file_ext in self.exclude_list or file_ext == "":
+                if file_ext == "" or (self.exclude_list and file_ext in self.exclude_list):
                     continue
                 
                 if not file_ext in self.get_filetypes():
