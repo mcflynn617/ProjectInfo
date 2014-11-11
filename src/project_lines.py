@@ -115,18 +115,6 @@ class ProjectLines(object):
             print "can't open file %s" % file_name
         return(line_count)
     
-    def check_num_lines(self):
-        ''' 
-        checks that the number of lines in project adds up to the sum of the number of
-        lines for each file type
-        '''
-        check_lines = 0
-        for key in self.get_filetypes():
-            print "file type '%s' has %d lines" % (key, self.__file_type_line_count[key])
-            check_lines +=  self.get_file_type_line_count(key)#self.__file_type_line_count[key]
-        assert(check_lines == self.get_project_line_count()), "the number of lines doesn't "\
-                                                "add up, some files might have "\
-                                                "been skipped"
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -148,6 +136,5 @@ if __name__ == '__main__':
                               skip_blank_lines = args.skip_blanks)
     proj_lines.traverse_project()
     print "total number of lines in project is %d" % proj_lines.get_project_line_count()
-    proj_lines.check_num_lines()
     
         
