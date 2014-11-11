@@ -115,6 +115,13 @@ class ProjectLines(object):
             print "can't open file %s" % file_name
         return(line_count)
     
+    def print_filetype_linecounts(self):
+        ''' 
+        prints the number of lines for each filetype
+        '''
+        for key in self.get_filetypes():
+            print "file type '%s' has %d lines" % (key, self.__file_type_line_count[key])
+        
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -136,5 +143,6 @@ if __name__ == '__main__':
                               skip_blank_lines = args.skip_blanks)
     proj_lines.traverse_project()
     print "total number of lines in project is %d" % proj_lines.get_project_line_count()
+    proj_lines.print_filetype_linecounts()
     
         
