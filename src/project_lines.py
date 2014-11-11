@@ -139,7 +139,10 @@ if __name__ == '__main__':
                                                       action = "store_true")
     args = parser.parse_args()
     
-    excluded_filetypes = map(str.strip,args.excluded_filetypes.split(","))
+    if args.excluded_filetypes == None:
+        excluded_filetypes = None
+    else:
+        excluded_filetypes = map(str.strip,args.excluded_filetypes.split(","))
     
     proj_lines = ProjectLines(args.root_path, exclude_list = excluded_filetypes, 
                               skip_blank_lines = args.skip_blanks)
